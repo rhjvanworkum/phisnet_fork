@@ -1,3 +1,11 @@
+/checkpoints
+/wandb
+/test
+/_MACOSX
+/ipynb_checkpoints
+*.db
+*.molden
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

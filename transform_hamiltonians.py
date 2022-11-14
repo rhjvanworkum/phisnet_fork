@@ -15,6 +15,12 @@ convention_dict = {
         orbital_sign_map={'s': [1], 'p': [1, 1, 1], 'd': [1, 1, 1, 1, 1]},
         orbital_order_map={'H': [0, 1, 2], 'O': [0, 1, 2, 3, 4, 5], 'C': [0, 1, 2, 3, 4, 5], 'N': [0, 1, 2, 3, 4, 5]},
     ),
+    'pyscf_minimal': Namespace(
+        atom_to_orbitals_map={'H': 's', 'C': 'ssp'},
+        orbital_idx_map={'s': [0], 'p': [1, 2, 0]},
+        orbital_sign_map={'s': [1], 'p': [1, 1, 1]},
+        orbital_order_map={'H': [0], 'C': [0, 1, 2, 3, 4]},
+    ),
     'aims': Namespace(
         atom_to_orbitals_map={'H': 'ssp', 'O': 'sssppd', 'C': 'sssppd', 'N': 'sssppd'},
         orbital_idx_map={'s': [0], 'p': [0, 1, 2], 'd': [0, 1, 2, 3, 4]},
@@ -76,23 +82,27 @@ def transform(hamiltonians, atoms, convention='svr'):
         orbitals += conv.atom_to_orbitals_map[a]
         orbitals_order += [idx + offset for idx in conv.orbital_order_map[a]]
 
+    # print(f'orbitals: {orbitals} in order: {orbitals_order}')
+
     transform_indices = []
     transform_signs = []
     for orb in orbitals:
         offset = sum(map(len, transform_indices))
-        print(offset)
         map_idx = conv.orbital_idx_map[orb]
         map_sign = conv.orbital_sign_map[orb]
-        transform_indices.append(np.array(map_idx) + offset)
-        transform_signs.append(np.array(map_sign))
+        transform_indices.append((np.array(map_idx) + offset).tolist())
+        transform_signs.append(map_sign)
+    transform_indices = [item for sublist in transform_indices for item in sublist]
+    transform_signs = [item for sublist in transform_signs for item in sublist]
+        
 
-    print(transform_indices, transform_signs)
+    # print(transform_indices)
+    # print(transform_signs)
 
     transform_indices = [transform_indices[idx] for idx in orbitals_order]
     transform_signs = [transform_signs[idx] for idx in orbitals_order]
-    #print('transform_indices', transform_indices)
-    transform_indices = np.concatenate(transform_indices).astype(np.int)
-    transform_signs = np.concatenate(transform_signs)
+    transform_indices = np.array(transform_indices).astype(np.int)
+    transform_signs = np.array(transform_signs)
 
 
     hamiltonians_new = hamiltonians[...,transform_indices, :]

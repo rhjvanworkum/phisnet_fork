@@ -27,5 +27,5 @@ You should now have a file called "h2o_pbe-def2svp_4999.db"
 # question -> Do we also need to save/load all extra parameters? (like orbitals, order, num_features, etc.)
 
 1) python convert_pyscf_database.py
-2) python train.py @args.txt
+2) python train_new.py @args.txt     -> !!! adjust dataset db in args.txt
 3) python predict.py @args.txt

@@ -44,28 +44,28 @@ def load_model(args, dataset, use_gpu):
 
 if __name__ == "__main__":
   args = parse_command_line_arguments()
-  epochs = 100
   use_wandb = True
   use_gpu = torch.cuda.is_available()
-  name = 'test'
+  name = 'fulvene_s01_200_F_new_2'
 
   datamodule = CustomDataModule(args)
 
   model = load_model(args, datamodule.dataset, use_gpu)
   phisnet = PhisNet(model=model, args=args)
+  phisnet.model.calculate_full_hamiltonian = True
   phisnet.model.calculate_core_hamiltonian = False
-  phisnet.model.calculate_overlap_matrix = False
-  phisnet.model.calculate_energy = False
+  phisnet.model.calculate_overlap_matrix = True
+  phisnet.model.calculate_energy = True
   phisnet.model.calculate_forces = False
   
   callbacks = [
-    pytorch_lightning.callbacks.LearningRateMonitor(logging_interval="epoch"),
+    pytorch_lightning.callbacks.LearningRateMonitor(logging_interval="step"),
     pytorch_lightning.callbacks.ModelCheckpoint(
-    monitor='val_loss',
-    dirpath='./checkpoints/',
-    filename=name + '-{epoch:02d}-{val_loss:.2f}',
-    mode = 'min',
- )
+      monitor='val_loss',
+      dirpath='./checkpoints/',
+      filename=name + '-{epoch:02d}-{val_loss:.2f}',
+      mode = 'min',
+    )
   ]
   
   if use_wandb:
@@ -73,14 +73,14 @@ if __name__ == "__main__":
     trainer = pytorch_lightning.Trainer(callbacks=callbacks, 
                                         logger=logger,
                                         default_root_dir='./test/',
-                                        max_epochs=epochs,
+                                        max_epochs=1000,
                                         accelerator='gpu',
                                         # deterministic=True,
                                         devices=1)
   else:
     trainer = pytorch_lightning.Trainer(callbacks=callbacks, 
                                     default_root_dir='./test/',
-                                    max_epochs=epochs,
+                                    max_epochs=1000,
                                     accelerator='gpu',
                                     # deterministic=True,
                                     devices=1) 

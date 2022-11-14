@@ -24,7 +24,7 @@
 --cutoff=15.0
 --orthonormal_basis=False
 --max_steps=100000000
---dataset=test.db
+--dataset=fulvene_s01_200_phisnet.db
 --num_train=180
 --num_valid=20
 --train_batch_size=16

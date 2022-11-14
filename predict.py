@@ -9,11 +9,15 @@ from datamodule import CustomDataModule
 from model import PhisNet
 from train_new import load_model
 
+import scipy
+import scipy.linalg
+
 
 def write_db_entry_to_molden_file(molden_file,
                                   atom_numbers,
                                   atom_positions,
-                                  mo_coeffs):
+                                  mo_coeffs=None,
+                                  F=None):
 
     atom_string = ""
     for atom, position in zip(atom_numbers, atom_positions):
@@ -23,6 +27,11 @@ def write_db_entry_to_molden_file(molden_file,
                     basis='sto_6g',
                     spin=0,
                     symmetry=True)
+    
+    if mo_coeffs is None:
+      myscf = molecule.RHF()
+      S = myscf.get_ovlp(molecule)
+      mo_e, mo_coeffs = scipy.linalg.eigh(F, S)
 
     with open(molden_file, 'w') as f:
         molden.header(molecule, f)
@@ -66,34 +75,21 @@ if __name__ == "__main__":
   model = load_model(args, datamodule.dataset, use_gpu)
   phisnet = PhisNet(model=model, args=args)
   
-  checkpoint = torch.load('checkpoints/test-epochepoch=99-val_lossval_loss=0.02.ckpt')
+  checkpoint = torch.load('checkpoints/ethene_hf_test-epoch=27-val_loss=0.24.ckpt')
+  # checkpoint = torch.load('checkpoints/test_hf-epoch=94-val_loss=0.02.ckpt')
   phisnet.load_state_dict(checkpoint['state_dict'])
   phisnet.model.eval()
       
-  with connect('geom_scan_200_sto_6g.db') as conn:
+  with connect('ethene_s01.db') as conn:
     R = conn.get(1)['positions'] * 1.8897261258369282 # convert angstroms to bohr
   
     input = {'positions': torch.stack([torch.tensor(R, dtype=torch.float32)]).to(device)}
     output = phisnet(input)
-    # print(output['full_hamiltonian'])
+    
+    # F = output['full_hamiltonian'][0].detach().cpu().numpy()
     mo_coeffs = output['orbital_coefficients'][0].detach().cpu().numpy()
-    # write_db_entry_to_molden_file('test.molden', conn.get(1)['numbers'], conn.get(1)['positions'], mo_coeffs)
+    # write_db_entry_to_molden_file('test.molden', conn.get(1)['numbers'], conn.get(1)['positions'], mo_coeffs=mo_coeffs)
     
     mo_coeffs = mo_coeffs.astype(np.double)
     results = run_casscf_calculation(conn.get(1)['numbers'], conn.get(1)['positions'], mo_coeffs)
     print(results)
-  
-  
-# database = HamiltonianDatabase('gs_200_sto_6g.db')
-# batch = [1]
-# all_data = database[batch] #fetch the batch data
-# R, E, F, H, S, C = [], [], [], [], [], []
-# for batch_num, data in enumerate(all_data):
-#     R_, E_, F_, H_, S_, C_ = data
-#     R.append(torch.tensor(R_))
-#     E.append(torch.tensor(E_))
-#     F.append(torch.tensor(F_))
-#     H.append(torch.tensor(H_))
-#     S.append(torch.tensor(S_))
-#     C.append(torch.tensor(C_))
-  

@@ -15,11 +15,15 @@ from ase.db import connect
 import apsw
 import numpy as np
 from training.sqlite_database import HamiltonianDatabase
+from transform_hamiltonians import transform
 
 convention = "pyscf"
+read_db_name = "fulvene_s01_200.db"
+write_db_name = "fulvene_s01_200_phisnet.db"
+n = 36
 
-db = connect('geom_scan_200_sto_6g.db')
-database = HamiltonianDatabase("gs_200_sto_6g.db", flags=(apsw.SQLITE_OPEN_READWRITE | apsw.SQLITE_OPEN_CREATE))
+db = connect(read_db_name)
+database = HamiltonianDatabase(write_db_name, flags=(apsw.SQLITE_OPEN_READWRITE | apsw.SQLITE_OPEN_CREATE))
 
 cursor = database._get_connection().cursor()
 
@@ -32,9 +36,14 @@ orbitals_ref = {}
 orbitals_ref[1] = np.array([0])       # H -> 1s
 orbitals_ref[6] = np.array([0, 0, 1]) # C -> 1s, 2s, 2p
 
+atoms = []
+dict = {6: 'C', 1: 'H'}
 #add orbitals to database
 for Z in database.Z:
     database.add_orbitals(Z, orbitals_ref[Z])
+    atoms.append(dict[Z])
+
+# print(atoms)
 
 cursor.execute('''BEGIN''') #begin transaction
 for i, row in enumerate(db.select()):
@@ -45,8 +54,8 @@ for i, row in enumerate(db.select()):
     R = row['positions'] * 1.8897261258369282 # convert angstrom to bohr
     # E = row.data['energy']
     # F = row.data['forces']
-    H = row.data['F'].reshape(36, 36)
-    # S = transform_hamiltonians.transform(row.data['overlap'],     atom_types, convention=convention)
-    database.add_data( R=R, E=None, F=None, H=H, S=None, C=None, transaction=False)
+    H = transform(row.data['F'].reshape(36, 36), atoms=atoms, convention='pyscf_minimal')
+    S = transform(row.data['S'].reshape(36, 36), atoms=atoms, convention='pyscf_minimal')
+    database.add_data( R=R, E=None, F=None, H=H, S=S, C=None, transaction=False)
 
 cursor.execute('''COMMIT''') #commit transaction

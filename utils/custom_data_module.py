@@ -7,7 +7,7 @@ class CustomDataModule(pl.LightningDataModule):
   def __init__(self, args):
     super().__init__()
     self.dataset = HamiltonianDataset(args.dataset, dtype=args.dtype)
-    self._train_dataset, self._valid_dataset, self._test_dataset = seeded_random_split(self.dataset, [args.num_train, args.num_valid, len(self.dataset)-(args.num_train+args.num_valid)], seed=args.split_seed)
+    self._train_dataset, self._valid_dataset, self._test_dataset = dataset_split_by_file(self.dataset, args.split_file)
     self.args = args
     self.n_workers = args.num_workers
     

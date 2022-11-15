@@ -8,54 +8,67 @@ Therefore the Fock matrix block 1x1 already corresponds to hydrogen 1 1s orbital
 
 So no need for tranformation back & forth
 """
-
-#!/usr/bin/env python3
 import numpy as np
 from ase.db import connect
 import apsw
 import numpy as np
 from training.sqlite_database import HamiltonianDatabase
-from transform_hamiltonians import transform
+from utils.transform_hamiltonians import transform
+import argparse
+from utils.definitions import orbital_definitions
 
-convention = "pyscf"
-read_db_name = "fulvene_s01_200.db"
-write_db_name = "fulvene_s01_200_phisnet.db"
-n = 36
+atom_type_list = ['H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne']
 
-db = connect(read_db_name)
-database = HamiltonianDatabase(write_db_name, flags=(apsw.SQLITE_OPEN_READWRITE | apsw.SQLITE_OPEN_CREATE))
+def convert_pyscf_database_to_phisnet_format(read_db_file: str, write_db_file: str, orbital_definition: str, basis_set_size: int) -> None:
+    read_db = connect(read_db_file)
+    write_db = HamiltonianDatabase(write_db_file, flags=(apsw.SQLITE_OPEN_READWRITE | apsw.SQLITE_OPEN_CREATE))
 
-cursor = database._get_connection().cursor()
+    cursor = write_db._get_connection().cursor()
 
-for row in db.select(1):
-    Zref = row['numbers']
-    database.add_Z(Z=Zref)
+    for row in read_db.select(1):
+        reference_atomic_numbers = row['numbers']
+        write_db.add_Z(Z=reference_atomic_numbers)
+    
+    orbitals_reference = orbital_definitions[orbital_definition]
+    atomic_symbols = []
+    for Z in write_db.Z:
+        write_db.add_orbitals(Z, orbitals_reference[Z])
+        atomic_symbols.append(atom_type_list[Z])
 
-# orbital ref for minimal basis set
-orbitals_ref = {}
-orbitals_ref[1] = np.array([0])       # H -> 1s
-orbitals_ref[6] = np.array([0, 0, 1]) # C -> 1s, 2s, 2p
+    cursor.execute('''BEGIN''')
+    for i, row in enumerate(read_db.select()):
+        if i % 100 == 0:
+            print(i)
+        
+        Z = row['numbers']
+        assert np.all(Z == reference_atomic_numbers)
+        
+        R = row['positions'] * 1.8897261258369282 # convert angstrom to bohr
+        H = transform(row.data['F'].reshape(basis_set_size, basis_set_size), atoms=atomic_symbols, convention='pyscf_minimal')
+        S = transform(row.data['S'].reshape(basis_set_size, basis_set_size), atoms=atomic_symbols, convention='pyscf_minimal')
+        write_db.add_data( R=R, E=None, F=None, H=H, S=S, C=None, transaction=False)
 
-atoms = []
-dict = {6: 'C', 1: 'H'}
-#add orbitals to database
-for Z in database.Z:
-    database.add_orbitals(Z, orbitals_ref[Z])
-    atoms.append(dict[Z])
+    cursor.execute('''COMMIT''')
 
-# print(atoms)
-
-cursor.execute('''BEGIN''') #begin transaction
-for i, row in enumerate(db.select()):
-    if i % 100 == 0:
-        print(i)
-    Z = row['numbers']
-    assert np.all(Z == Zref)
-    R = row['positions'] * 1.8897261258369282 # convert angstrom to bohr
-    # E = row.data['energy']
-    # F = row.data['forces']
-    H = transform(row.data['F'].reshape(36, 36), atoms=atoms, convention='pyscf_minimal')
-    S = transform(row.data['S'].reshape(36, 36), atoms=atoms, convention='pyscf_minimal')
-    database.add_data( R=R, E=None, F=None, H=H, S=S, C=None, transaction=False)
-
-cursor.execute('''COMMIT''') #commit transaction
+if __name__ == "__main__":
+    # example: python convert_pyscf_database --read_db_file ethene.db --write_db_file ethene_phisnet.db 
+    # --orbital_definition fulvene_minimal_basis --basis_set_size 36
+    
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--read_db_file', type=str)
+    parser.add_argument('--write_db_file', type=str)
+    parser.add_argument('--orbital_definition', type=str)
+    parser.add_argument('--basis_set_size', type=int)
+    args = parser.parse_args()
+    
+    read_db_file = args.read_db_file
+    write_db_file = args.write_db_file
+    orbital_definition = args.orbital_definition
+    basis_set_size = args.basis_set_size
+    
+    convert_pyscf_database_to_phisnet_format(
+        read_db_file=read_db_file,
+        write_db_file=write_db_file,
+        orbital_definition=orbital_definitions,
+        basis_set_size=basis_set_size
+    )

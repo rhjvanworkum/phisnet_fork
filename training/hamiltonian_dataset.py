@@ -58,3 +58,8 @@ def seeded_random_split(dataset, lengths, seed=None):
 
     indices = np.random.RandomState(seed=seed).permutation(sum(lengths))
     return [torch.utils.data.Subset(dataset, indices[offset - length:offset]) for offset, length in zip(torch._utils._accumulate(lengths), lengths)]
+
+def dataset_split_by_file(dataset, split_file):
+    split = np.load(split_file)
+    train_idxs, val_idxs, test_idxs = split['train_idx'], split['val_idx'], split['test_idx']
+    return [torch.utils.data.Subset(dataset, idxs) for idxs in [train_idxs, val_idxs, test_idxs]]

@@ -3,6 +3,7 @@ from pytorch_lightning.loggers import WandbLogger
 import logging
 from utils.custom_data_module import CustomDataModule
 from utils.phisnet import PhisNet
+import schnetpack as schnetpack
 
 from training import *
 from nn import *
@@ -43,7 +44,6 @@ def load_model(args, dataset, use_gpu):
 if __name__ == "__main__":
   args = parse_command_line_arguments()
   use_wandb = True
-  WAND_PROJECT = 'phisnet'
   use_gpu = torch.cuda.is_available()
 
   datamodule = CustomDataModule(args)
@@ -57,16 +57,29 @@ if __name__ == "__main__":
   phisnet.model.calculate_forces = False
   
   callbacks = [
-    pytorch_lightning.callbacks.LearningRateMonitor(logging_interval="step"),
-    pytorch_lightning.callbacks.ModelCheckpoint(
-      monitor='val_loss',
-      dirpath='./checkpoints/',
-      filename=args.model_name + '-{epoch:02d}-{val_loss:.2f}',
-      mode = 'min',
-    )
+      schnetpack.train.ModelCheckpoint(
+          monitor="val_loss",
+          mode="min",
+          save_top_k=1,
+          save_last=True,
+          dirpath="checkpoints",
+          filename="{epoch:02d}",
+          inference_path="./checkpoints/" + args.model_name + ".pt"
+      ),
+      pytorch_lightning.callbacks.LearningRateMonitor(
+        logging_interval="epoch"
+      ),
+      pytorch_lightning.callbacks.EarlyStopping(
+        monitor="val_loss", 
+        min_delta=1e-6, 
+        patience=50, 
+        verbose=False, 
+        mode="min"
+      )
   ]
   
   if use_wandb:
+    WAND_PROJECT = os.environ['WANDB_PROJECT']
     logger = WandbLogger(project=WAND_PROJECT)
     trainer = pytorch_lightning.Trainer(callbacks=callbacks, 
                                         logger=logger,

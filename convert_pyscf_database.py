@@ -11,13 +11,15 @@ So no need for tranformation back & forth
 import numpy as np
 from ase.db import connect
 import apsw
+import os
 import numpy as np
-from training.sqlite_database import HamiltonianDatabase
-from utils.transform_hamiltonians import transform
 import argparse
-from utils.definitions import orbital_definitions
 
-atom_type_list = ['H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne']
+from training.sqlite_database import HamiltonianDatabase
+from utils.transform_hamiltonians import transform_hamiltonians_from_ao_to_lm
+from utils.definitions import orbital_definitions, orbs
+
+atom_type_list = ['', 'H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne']
 
 def convert_pyscf_database_to_phisnet_format(read_db_file: str, write_db_file: str, orbital_definition: str, basis_set_size: int) -> None:
     read_db = connect(read_db_file)
@@ -44,8 +46,8 @@ def convert_pyscf_database_to_phisnet_format(read_db_file: str, write_db_file: s
         assert np.all(Z == reference_atomic_numbers)
         
         R = row['positions'] * 1.8897261258369282 # convert angstrom to bohr
-        H = transform(row.data['F'].reshape(basis_set_size, basis_set_size), atoms=atomic_symbols, convention='pyscf_minimal')
-        S = transform(row.data['S'].reshape(basis_set_size, basis_set_size), atoms=atomic_symbols, convention='pyscf_minimal')
+        H = transform_hamiltonians_from_ao_to_lm(row.data['F'].reshape(basis_set_size, basis_set_size), atoms=atomic_symbols, convention=orbital_definition)
+        S = transform_hamiltonians_from_ao_to_lm(row.data['S'].reshape(basis_set_size, basis_set_size), atoms=atomic_symbols, convention=orbital_definition)
         write_db.add_data( R=R, E=None, F=None, H=H, S=S, C=None, transaction=False)
 
     cursor.execute('''COMMIT''')
@@ -56,19 +58,19 @@ if __name__ == "__main__":
     
     parser = argparse.ArgumentParser()
     parser.add_argument('--read_db_file', type=str)
-    parser.add_argument('--write_db_file', type=str)
     parser.add_argument('--orbital_definition', type=str)
     parser.add_argument('--basis_set_size', type=int)
     args = parser.parse_args()
     
-    read_db_file = args.read_db_file
-    write_db_file = args.write_db_file
+    short = args.read_db_file.split('.')[0]
+    read_db_file = os.environ['base_dir'] + f'data_storage/{args.read_db_file}'
+    write_db_file = os.environ['base_dir'] + f'data_storage/{short}_phisnet.db'
     orbital_definition = args.orbital_definition
     basis_set_size = args.basis_set_size
     
     convert_pyscf_database_to_phisnet_format(
         read_db_file=read_db_file,
         write_db_file=write_db_file,
-        orbital_definition=orbital_definitions,
+        orbital_definition=orbital_definition,
         basis_set_size=basis_set_size
     )

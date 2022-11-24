@@ -1,4 +1,5 @@
 import pytorch_lightning as pl
+import os
 
 from training import *
 
@@ -6,8 +7,11 @@ class CustomDataModule(pl.LightningDataModule):
   
   def __init__(self, args):
     super().__init__()
-    self.dataset = HamiltonianDataset(args.dataset, dtype=args.dtype)
-    self._train_dataset, self._valid_dataset, self._test_dataset = dataset_split_by_file(self.dataset, args.split_file)
+    dataset_path = os.path.join(os.environ['base_dir'], f'data_storage/{args.dataset}')
+    split_path = os.path.join(os.environ['base_dir'], f'data_storage/{args.split_file}')
+    
+    self.dataset = HamiltonianDataset(dataset_path, dtype=args.dtype)
+    self._train_dataset, self._valid_dataset, self._test_dataset = dataset_split_by_file(self.dataset, split_path)
     self.args = args
     self.n_workers = args.num_workers
     
@@ -18,7 +22,7 @@ class CustomDataModule(pl.LightningDataModule):
 
   @property
   def val_dataset(self):
-      return self._val_dataset
+      return self._valid_dataset
 
   @property
   def test_dataset(self):

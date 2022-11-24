@@ -45,6 +45,9 @@ class NeuralNetwork(nn.Module):
         self.calculate_forces           = True
         self.create_graph               = True  #can be set to False if the NN is only used for inference
 
+        # for schnetpack
+        self.do_postprocessing = False
+
         #load state from a file (if load_from is given) and overwrite hyperparameters
         if load_from is not None:
             saved_state = torch.load(load_from, map_location='cpu')

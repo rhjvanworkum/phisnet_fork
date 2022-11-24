@@ -2,12 +2,19 @@ import numpy as np
 from argparse import Namespace
 
 # definition of AO's for molecules in a specific basis
+orbs = [{
+    1: np.array([0]),           # H has only 1s orbital
+    6: np.array([0, 0, 1])      # C has 1s, 2s & 2p orbital
+}]
+
 orbital_definitions = {
     'fulvene_minimal_basis': {
         1: np.array([0]),           # H has only 1s orbital
         6: np.array([0, 0, 1])      # C has 1s, 2s & 2p orbital
     }
 }
+
+
 
 # definition of how AO's are outputted by different quantum chemistry programs in different basis sets
 orbital_conventions = {
@@ -36,7 +43,7 @@ orbital_conventions = {
         orbital_sign_map={'s': [1], 'p': [1, 1, 1], 'd': [1, 1, 1, 1, 1]},
         orbital_order_map={'H': [0, 1, 2], 'O': [0, 1, 2, 3, 4, 5], 'C': [0, 1, 2, 3, 4, 5], 'N': [0, 1, 2, 3, 4, 5], 'F': [0, 1, 2, 3, 4, 5]},
     ),
-    """ Added by us - all apply to PySCF """
+    # Added by us - all apply to PySCF
     'fulvene_minimal_basis': Namespace(
         atom_to_orbitals_map={'H': 's', 'C': 'ssp'},
         orbital_idx_map={'s': [0], 'p': [1, 2, 0]},

@@ -1,6 +1,6 @@
---model_name=fulvene_s01_200_F_new_2
---dataset=fulvene_s01_200_phisnet.db
---split_file=geom_scan_200.npz
+--model_name=fulvene_gs250_inter_phisnet
+--dataset=fulvene_geom_scan_250_phisnet.db
+--split_file=fulvene_gs_250_inter.npz
 --restart=None
 --load_from=None
 --train_batch_size=16

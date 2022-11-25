@@ -18,6 +18,9 @@ class PhisNet(pl.LightningModule):
   def forward(self, inputs):
     results = self.model(R=inputs['positions'])
     return results
+
+  def save_model(self, model_path, do_postprocessing):
+    torch.save(self.model, model_path)
   
   def loss_fn(self, pred, targets):
     loss = 0.0

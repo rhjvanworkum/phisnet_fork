@@ -64,7 +64,7 @@ if __name__ == "__main__":
           save_last=True,
           dirpath="checkpoints",
           filename="{epoch:02d}",
-          inference_path="./checkpoints/" + args.model_name + ".pt"
+          model_path="./checkpoints/" + args.model_name + ".pt"
       ),
       pytorch_lightning.callbacks.LearningRateMonitor(
         logging_interval="epoch"

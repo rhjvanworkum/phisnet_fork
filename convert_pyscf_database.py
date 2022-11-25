@@ -53,8 +53,7 @@ def convert_pyscf_database_to_phisnet_format(read_db_file: str, write_db_file: s
     cursor.execute('''COMMIT''')
 
 if __name__ == "__main__":
-    # example: python convert_pyscf_database --read_db_file ethene.db --write_db_file ethene_phisnet.db 
-    # --orbital_definition fulvene_minimal_basis --basis_set_size 36
+    # example:python convert_pyscf_database.py --read_db_file fulvene_md_250.db --orbital_definition fulvene_minimal_basis --basis_set_size 36
     
     parser = argparse.ArgumentParser()
     parser.add_argument('--read_db_file', type=str)
@@ -63,8 +62,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     short = args.read_db_file.split('.')[0]
-    read_db_file = os.environ['base_dir'] + f'data_storage/{args.read_db_file}'
-    write_db_file = os.environ['base_dir'] + f'data_storage/{short}_phisnet.db'
+    read_db_file = f'/home/rhjvanworkum/caschnet/data_storage/{args.read_db_file}'
+    write_db_file = f'/home/rhjvanworkum/caschnet/data_storage/{short}_phisnet.db'
     orbital_definition = args.orbital_definition
     basis_set_size = args.basis_set_size
     

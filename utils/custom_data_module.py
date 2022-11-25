@@ -1,7 +1,7 @@
 import pytorch_lightning as pl
 import os
 
-from training import *
+from phisnet_fork.training import *
 
 class CustomDataModule(pl.LightningDataModule):
   

@@ -2,7 +2,7 @@ import pytorch_lightning as pl
 import torch
 from torchmetrics import MeanSquaredError
 
-from utils.lr_scheduler import NoamLR
+from phisnet_fork.utils.lr_scheduler import NoamLR
 
 class PhisNet(pl.LightningModule):
   

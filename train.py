@@ -1,12 +1,13 @@
 import pytorch_lightning
 from pytorch_lightning.loggers import WandbLogger
 import logging
-from utils.custom_data_module import CustomDataModule
-from utils.phisnet import PhisNet
 import schnetpack as schnetpack
 
-from training import *
-from nn import *
+from phisnet_fork.utils.custom_data_module import CustomDataModule
+from phisnet_fork.utils.phisnet import PhisNet
+from phisnet_fork.training import *
+from phisnet_fork.nn import *
+
 
 def load_model(args, dataset, use_gpu):
   model =  NeuralNetwork(

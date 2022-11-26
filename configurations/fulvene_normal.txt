@@ -1,6 +1,6 @@
---model_name=fulvene_md250_phisnet
---dataset=fulvene_md_250_phisnet.db
---split_file=fulvene_md_250.npz
+--model_name=fulvene_s01_1000_phisnet
+--dataset=fulvene_s01_phisnet.db
+--split_file=fulvene_normal_1000.npz
 --restart=None
 --load_from=None
 --train_batch_size=16
@@ -18,9 +18,9 @@
 --beta2=0.999
 --momentum=0.0
 --activation=swish
---order=2
---num_features=64
---num_basis_functions=64
+--order=3
+--num_features=128
+--num_basis_functions=128
 --num_modules=5
 --num_residual_pre_x=1
 --num_residual_post_x=1
@@ -39,7 +39,7 @@
 --num_residual_over_ij=2
 --basis_functions=exp-bernstein
 --cutoff=15.0
---orthonormal_basis=False
+--orthonormal_basis=True
 --full_hamiltonian_weight=1.0
 --core_hamiltonian_weight=0.0
 --overlap_matrix_weight=1.0

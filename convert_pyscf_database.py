@@ -15,9 +15,9 @@ import os
 import numpy as np
 import argparse
 
-from training.sqlite_database import HamiltonianDatabase
-from utils.transform_hamiltonians import transform_hamiltonians_from_ao_to_lm
-from utils.definitions import orbital_definitions, orbs
+from phisnet_fork.training.sqlite_database import HamiltonianDatabase
+from phisnet_fork.utils.transform_hamiltonians import transform_hamiltonians_from_ao_to_lm
+from phisnet_fork.utils.definitions import orbital_definitions
 
 atom_type_list = ['', 'H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne']
 
@@ -53,7 +53,7 @@ def convert_pyscf_database_to_phisnet_format(read_db_file: str, write_db_file: s
     cursor.execute('''COMMIT''')
 
 if __name__ == "__main__":
-    # example:python convert_pyscf_database.py --read_db_file fulvene_md_250.db --orbital_definition fulvene_minimal_basis --basis_set_size 36
+    # example: python phisnet_fork/convert_pyscf_database.py --read_db_file fulvene_s01.db --orbital_definition fulvene_minimal_basis --basis_set_size 36
     
     parser = argparse.ArgumentParser()
     parser.add_argument('--read_db_file', type=str)

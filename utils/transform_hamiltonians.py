@@ -40,8 +40,8 @@ def transform_hamiltonians(hamiltonians: np.ndarray, atoms: List[str], conv: Nam
     transform_indices = [item for sublist in transform_indices for item in sublist]
     transform_signs = [item for sublist in transform_signs for item in sublist]
 
-    transform_indices = [transform_indices[idx] for idx in orbitals_order]
-    transform_signs = [transform_signs[idx] for idx in orbitals_order]
+    # transform_indices = [transform_indices[idx] for idx in orbitals_order]
+    # transform_signs = [transform_signs[idx] for idx in orbitals_order]
     transform_indices = np.array(transform_indices).astype(np.int)
     transform_signs = np.array(transform_signs)
 

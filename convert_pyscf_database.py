@@ -44,7 +44,7 @@ def convert_pyscf_database_to_phisnet_format(read_db_file: str, write_db_file: s
         
         Z = row['numbers']
         assert np.all(Z == reference_atomic_numbers)
-        
+
         R = row['positions'] * 1.8897261258369282 # convert angstrom to bohr
         H = transform_hamiltonians_from_ao_to_lm(row.data['F'].reshape(basis_set_size, basis_set_size), atoms=atomic_symbols, convention=orbital_definition)
         S = transform_hamiltonians_from_ao_to_lm(row.data['S'].reshape(basis_set_size, basis_set_size), atoms=atomic_symbols, convention=orbital_definition)
@@ -53,7 +53,7 @@ def convert_pyscf_database_to_phisnet_format(read_db_file: str, write_db_file: s
     cursor.execute('''COMMIT''')
 
 if __name__ == "__main__":
-    # example: python phisnet_fork/convert_pyscf_database.py --read_db_file fulvene_s01.db --orbital_definition fulvene_minimal_basis --basis_set_size 36
+    # example: python phisnet_fork/convert_pyscf_database.py --read_db_file fulvene_gs_250_cc-pVDZ.db --orbital_definition fulvene_cc-pVDZ --basis_set_size 114
     
     parser = argparse.ArgumentParser()
     parser.add_argument('--read_db_file', type=str)
@@ -62,8 +62,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     short = args.read_db_file.split('.')[0]
-    read_db_file = f'/home/rhjvanworkum/caschnet/data_storage/{args.read_db_file}'
-    write_db_file = f'/home/rhjvanworkum/caschnet/data_storage/{short}_phisnet.db'
+    read_db_file = f'./data_storage/{args.read_db_file}'
+    write_db_file = f'./data_storage/{short}_phisnet.db'
     orbital_definition = args.orbital_definition
     basis_set_size = args.basis_set_size
     

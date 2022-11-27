@@ -5,6 +5,10 @@ orbital_definitions = {
     'fulvene_minimal_basis': {
         1: np.array([0]),           # H has only 1s orbital
         6: np.array([0, 0, 1])      # C has 1s, 2s & 2p orbital
+    },
+    'fulvene_cc-pVDZ': {
+        1: np.array([0, 0, 1]),           # H has only 1s, 2s, 2p orbitals
+        6: np.array([0, 0, 0, 1, 1, 2])   # C has 1s, 2s, 3s, 2p, 3p, 3d orbitals
     }
 }
 
@@ -41,9 +45,17 @@ orbital_conventions = {
         atom_to_orbitals_map={'H': 's', 'C': 'ssp'},
         orbital_idx_map={'s': [0], 'p': [1, 2, 0]},
         orbital_sign_map={'s': [1], 'p': [1, 1, 1]},
-        orbital_order_map={'H': [0], 'C': [0, 1, 2, 3, 4]},
+        orbital_order_map={'H': [0], 'C': [0, 1, 2]},
+    ),
+    'fulvene_cc-pVDZ': Namespace(
+        atom_to_orbitals_map={'H': 'ssp', 'C': 'sssppd'},
+        orbital_idx_map={'s': [0], 'p': [1, 2, 0], 'd': [0, 1, 2, 3, 4]},
+        orbital_sign_map={'s': [1], 'p': [1, 1, 1], 'd': [1, 1, 1, 1, 1]},
+        orbital_order_map={'H': [0, 1, 2], 'C': [0, 1, 2, 3, 4, 5]},
     ),
 }
+
+# d orbs -> -2, 2 => dxy or dx2-y2 (0, 4),      -1, 1 => dzx, dyz (1, 3)
 
 reverse_orbital_conventions = {
     'fulvene_minimal_basis': Namespace(

@@ -1,5 +1,5 @@
---model_name=fulvene_gs250_cc-pVDZ_molcas_phisnet_test
---dataset=fulvene_gs_250_cc-pVDZ_phisnet.db
+--model_name=fulvene_gs250_cc-pVDZ_molcas_phisnet_test_4
+--dataset=fulvene_gs_250_cc-pVDZ_phisnet_4.db
 --split_file=fulvene_gs_250.npz
 --restart=None
 --load_from=None

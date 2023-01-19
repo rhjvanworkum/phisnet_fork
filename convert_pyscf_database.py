@@ -49,7 +49,6 @@ def convert_pyscf_database_to_phisnet_format(read_db_file: str, write_db_file: s
         H = transform_hamiltonians_from_ao_to_lm(row.data['F'].reshape(basis_set_size, basis_set_size), atoms=atomic_symbols, convention=orbital_definition)
         S = transform_hamiltonians_from_ao_to_lm(row.data['S'].reshape(basis_set_size, basis_set_size), atoms=atomic_symbols, convention=orbital_definition)
         write_db.add_data( R=R, E=None, F=None, H=H, S=S, C=None, transaction=False)
-
     cursor.execute('''COMMIT''')
 
 if __name__ == "__main__":
@@ -63,7 +62,7 @@ if __name__ == "__main__":
     
     short = args.read_db_file.split('.')[0]
     read_db_file = f'./data_storage/{args.read_db_file}'
-    write_db_file = f'./data_storage/{short}_phisnet.db'
+    write_db_file = f'./data_storage/{short}_phisnet_4.db'
     orbital_definition = args.orbital_definition
     basis_set_size = args.basis_set_size
     

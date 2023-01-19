@@ -1,4 +1,4 @@
---model_name=fulvene_s01_1000_phisnet
+--model_name=blablabla
 --dataset=fulvene_s01_phisnet.db
 --split_file=fulvene_normal_1000.npz
 --restart=None
@@ -18,7 +18,7 @@
 --beta2=0.999
 --momentum=0.0
 --activation=swish
---order=3
+--order=2
 --num_features=128
 --num_basis_functions=128
 --num_modules=5

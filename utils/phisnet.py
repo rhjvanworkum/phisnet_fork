@@ -86,7 +86,7 @@ class PhisNet(pl.LightningModule):
 
     schedulers = []
     # schedule = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=self.args.decay_factor, patience=self.args.decay_patience)
-    schedule = NoamLR(optimizer, warmup_steps=25)
+    schedule = NoamLR(optimizer, warmup_steps=15)
     optimconf = {"scheduler": schedule, "name": "lr_schedule", "monitor": "val_loss"}
     schedulers.append(optimconf)
     return [optimizer], schedulers

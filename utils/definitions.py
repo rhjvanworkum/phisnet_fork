@@ -49,7 +49,7 @@ orbital_conventions = {
     ),
     'fulvene_cc-pVDZ': Namespace(
         atom_to_orbitals_map={'H': 'ssp', 'C': 'sssppd'},
-        orbital_idx_map={'s': [0], 'p': [1, 2, 0], 'd': [0, 1, 2, 3, 4]},
+        orbital_idx_map={'s': [0], 'p': [1, 2, 0], 'd': [4, 3, 2, 1, 0]},
         orbital_sign_map={'s': [1], 'p': [1, 1, 1], 'd': [1, 1, 1, 1, 1]},
         orbital_order_map={'H': [0, 1, 2], 'C': [0, 1, 2, 3, 4, 5]},
     ),
@@ -63,5 +63,11 @@ reverse_orbital_conventions = {
         orbital_idx_map={'s': [0], 'p': [2, 0, 1]},
         orbital_sign_map={'s': [1], 'p': [1, 1, 1]},
         orbital_order_map={'H': [0], 'C': [0, 1, 2, 3, 4]},
+    ),
+    'fulvene_cc-pVDZ': Namespace(
+        atom_to_orbitals_map={'H': 'ssp', 'C': 'sssppd'},
+        orbital_idx_map={'s': [0], 'p': [2, 0, 1], 'd': [4, 3, 2, 1, 0]},
+        orbital_sign_map={'s': [1], 'p': [1, 1, 1], 'd': [1, 1, 1, 1, 1]},
+        orbital_order_map={'H': [0, 1, 2], 'C': [0, 1, 2, 3, 4, 5]},
     ),
 }

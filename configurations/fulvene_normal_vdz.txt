@@ -1,6 +1,6 @@
---model_name=fulvene_gs2500_cc-pVDZ_molcas_phisnet
---dataset=fulvene_gs_2500_cc-pVDZ_molcas_phisnet.db
---split_file=fulvene_gs_2500.npz
+--model_name=fulvene_s005_200_vdz_phisnet
+--dataset=fulvene_s005_vdz_phisnet_2.db
+--split_file=fulvene_normal_200.npz
 --restart=None
 --load_from=None
 --train_batch_size=16

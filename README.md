@@ -1,4 +1,9 @@
 # phisnet_fork
+Fork of original PhiSNet code used for the work in CasNet. For further instructions see: https://github.com/rhjvanworkum/CasNet
+
+
+
+### old instructions
 
 Here we provide the code for training our PhiSNet model.
 Package requirements (lower versions might work, but were not tested):
@@ -23,11 +28,3 @@ You should now have a file called "h2o_pbe-def2svp_4999.db"
 
 4) Train PhiSNet by running
 > python3 train.py @args.txt
-
-
-
-# question -> Do we also need to save/load all extra parameters? (like orbitals, order, num_features, etc.)
-
-1) python convert_pyscf_database.py
-2) python train_new.py @args.txt     -> !!! adjust dataset db in args.txt
-3) python predict.py @args.txt
